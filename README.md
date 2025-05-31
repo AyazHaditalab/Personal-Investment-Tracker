@@ -1,24 +1,26 @@
-# Personal Investment Tracker & Stock Predictor
+# Personal Investment Tracker & Stock Predictor (with Streamlit GUI)
 
-A full-featured personal finance and investment tracker built entirely in Python.  
+A full-featured personal finance and investment tracker built entirely in Python with a web-based interface using Streamlit.  
 This project simulates a complete trading platform with real-time stock data, portfolio analysis, buy/sell simulation, cash account management, and machine learning-based stock price prediction.
 
 ## Features
 
+- Full interactive web dashboard built with Streamlit
 - Real-time stock price fetching using yfinance
-- Track portfolio positions, cash balance, and net worth
-- Deposit & withdraw virtual funds
+- View portfolio positions, cash balance, gain/loss, and total net worth
+- Deposit & withdraw virtual funds directly through the web interface
 - Buy & sell stocks with live market prices
 - Full portfolio gain/loss analysis (dollar & percentage)
 - Live allocation pie chart (stocks + cash)
 - Predict stock prices using:
     - Linear Regression (scikit-learn)
     - Moving Average slope model
-- Matplotlib visualizations for portfolio and predictions
+- Data visualizations for portfolio and predictions using matplotlib
 
 ## Tech Stack
 
 Python 3 - Core language  
+Streamlit - Web-based UI  
 yfinance - Stock data API  
 pandas - Data manipulation  
 numpy - Numerical processing  
@@ -33,19 +35,22 @@ VS Code - Development
 
 pip install -r requirements.txt
 
-2️⃣ Run the App:
+2️⃣ Run the Streamlit App:
 
-python main.py
+streamlit run dashboard.py
 
-## Example Menu Flow
+The app will open in your browser.
 
-1. View Portfolio  
-2. Deposit Funds  
-3. Withdraw Funds  
-4. Buy Stock  
-5. Sell Stock  
-6. Run Prediction  
-7. Exit
+You can also alternately run the text-based version of the software:
+
+python main.py (this will run directly on the terminal window)
+
+## App Sections
+
+- 📈 Portfolio — view full portfolio breakdown, gain/loss, and allocation pie chart
+- 💵 Trade Stocks — buy/sell stocks using real-time prices
+- 🔮 Predict Stock — forecast future prices using ML models
+- 💰 Manage Funds — deposit or withdraw virtual funds
 
 ## Sample Visualizations
 
@@ -54,12 +59,12 @@ python main.py
 
 ## Skills Demonstrated
 
-- Applied finance & investing logic
+- Full-stack Python development
 - Real-time API integration
-- Modular Python OOP design
-- Data science & ML modeling
-- Full data pipeline from fetching → analyzing → predicting → visualizing
-- Resume-grade project for data science, software, finance or co-op interviews
+- Machine learning model implementation (regression, moving averages)
+- Web UI development with Streamlit
+- Data visualization and financial data analysis
+- Resume-grade project for data science, finance, software or fintech co-op interviews
 
 ## Author
 
