@@ -41,6 +41,10 @@ streamlit run dashboard.py
 
 The app will open in your browser.
 
+You can also alternately run the text-based version of the software:
+
+python main.py (this will run directly on the terminal window)
+
 ## App Sections
 
 - 📈 Portfolio — view full portfolio breakdown, gain/loss, and allocation pie chart
