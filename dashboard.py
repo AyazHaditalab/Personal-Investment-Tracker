@@ -88,7 +88,8 @@ def display_portfolio():
     st.write(f"**Cash Balance:** ${load_cash():.2f}")
     st.write(f"**Net Worth:** ${total_value + load_cash():.2f}")
 
-    plot_portfolio_pie(portfolio)
+    if total_value + load_cash() > 0:
+        plot_portfolio_pie(portfolio)
 
 # --- Streamlit App ---
 
