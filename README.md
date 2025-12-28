@@ -1,71 +1,160 @@
-# Personal Investment Tracker & Stock Predictor (with Streamlit GUI)
+# Personal Investment Tracker & Stock Predictor (Streamlit)
 
-A full-featured personal finance and investment tracker built entirely in Python with a web-based interface using Streamlit.  
-This project simulates a complete trading platform with real-time stock data, portfolio analysis, buy/sell simulation, cash account management, and machine learning-based stock price prediction.
+A full-featured personal finance and investment tracker built entirely in Python, with an interactive Streamlit web interface.
 
-## Features
+This project simulates a realistic retail investing platform: users can manage a virtual portfolio, trade stocks using live market data, track performance, and generate risk-aware, multi-day stock predictions using machine learning.
 
-- Full interactive web dashboard built with Streamlit
-- Real-time stock price fetching using yfinance
-- View portfolio positions, cash balance, gain/loss, and total net worth
-- Deposit & withdraw virtual funds directly through the web interface
-- Buy & sell stocks with live market prices
-- Full portfolio gain/loss analysis (dollar & percentage)
-- Live allocation pie chart (stocks + cash)
-- Predict stock prices using:
-    - Linear Regression (scikit-learn)
-    - Moving Average slope model
-- Data visualizations for portfolio and predictions using matplotlib
+---
 
-## Tech Stack
+## 🚀 Features
 
-Python 3 - Core language  
-Streamlit - Web-based UI  
-yfinance - Stock data API  
-pandas - Data manipulation  
-numpy - Numerical processing  
-scikit-learn - Machine learning (Linear Regression)  
-matplotlib - Data visualization  
-csv - Data persistence  
-VS Code - Development
+- Interactive Streamlit dashboard
+- Real-time stock prices via yfinance
+- Portfolio tracking with:
+  - Total value
+  - Cash balance
+  - Unrealized gains/losses
+  - Net worth
+- Buy & sell stocks at live prices (simulation)
+- Virtual cash account (deposit / withdraw)
+- Portfolio allocation pie chart (stocks + cash)
+- Multi-day stock prediction engine with:
+  - Ridge Regression (default)
+  - Linear Regression
+  - Baseline (no-skill) model
+- Risk-aware decision logic:
+  - BUY / SELL / HOLD
+  - Leaning Buy / Sell
+  - Watchlist / No edge
+- Volatility-adaptive thresholds
+- Confidence & signal strength scoring
+- Clean charts with decision-colored signals
 
-## Usage
+---
 
-1️⃣ Install Dependencies:
+## 🧠 Prediction Philosophy
 
+This project intentionally avoids unrealistic “always buy” signals.
+
+Signals are only shown when:
+- Predicted return exceeds typical model error (MAE)
+- Market volatility justifies an edge
+- Selected risk tolerance allows it
+
+As a result:
+- BUY / SELL signals are uncommon
+- HOLD is the most common outcome
+- This mirrors real-world quantitative finance behavior
+
+---
+
+## 🛠️ Tech Stack
+
+- Python 3
+- Streamlit — Web UI
+- yfinance — Market data
+- pandas — Data manipulation
+- numpy — Numerical computation
+- scikit-learn — Machine learning
+- matplotlib — Data visualization
+- CSV — Lightweight persistence
+- VS Code — Development environment
+
+---
+
+## 📦 Installation
+
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+cd YOUR_REPO_NAME
+```
+### 2️⃣ Install dependencies
+```bash
 pip install -r requirements.txt
+```
+---
 
-2️⃣ Run the Streamlit App:
+## ▶️ Running the App
 
+### Streamlit GUI (recommended)
+```bash
 streamlit run dashboard.py
+```
+The app will open automatically in your browser.
 
-The app will open in your browser.
+## 📂 App Sections
 
-You can also alternately run the text-based version of the software:
+- 📈 Portfolio  
+  View holdings, gains/losses, allocation, and net worth.
 
-python main.py (this will run directly on the terminal window)
+- 💵 Trade Stocks  
+  Buy and sell stocks using real-time prices and a virtual balance.
 
-## App Sections
+- 🔮 Predict Stock  
+  Generate multi-day forecasts with risk-aware BUY / SELL / HOLD decisions.
 
-- 📈 Portfolio — view full portfolio breakdown, gain/loss, and allocation pie chart
-- 💵 Trade Stocks — buy/sell stocks using real-time prices
-- 🔮 Predict Stock — forecast future prices using ML models
-- 💰 Manage Funds — deposit or withdraw virtual funds
+- 💰 Manage Funds  
+  Deposit or withdraw virtual cash.
 
-## Sample Visualizations
+---
+
+## 📊 Visualizations
 
 - Portfolio allocation pie chart
-- Price prediction line chart (Linear Regression & Moving Average models)
+- Historical price chart
+- Decision-colored forecast line
+- Target price projection for selected horizon
 
-## Skills Demonstrated
+---
 
-- Full-stack Python development
-- Real-time API integration
-- Machine learning model implementation (regression, moving averages)
-- Web UI development with Streamlit
-- Data visualization and financial data analysis
-- Resume-grade project for data science, finance, software or fintech co-op interviews
+## 🎯 Skills Demonstrated
 
-## Author
+- End-to-end Python application development
+- Financial data ingestion & processing
+- Feature engineering for time-series prediction
+- Machine learning model implementation
+- Risk-adjusted decision systems
+- UI/UX design for analytical tools
+- Resume-grade project architecture
 
-Ayaz Haditalab — University of Waterloo Math Co-op Student
+---
+
+## ⚠️ Disclaimer
+
+This project is for educational purposes only.  
+It does not provide financial advice or investment recommendations.
+
+---
+
+## 👤 Author
+
+Ayaz Haditalab  
+Honours Mathematics Co-op Student  
+University of Waterloo
+
+---
+
+## ⬆️ Pushing Updates to GitHub
+```bash
+git status
+git add .
+git commit -m "Finalize Streamlit investment tracker and prediction system"
+git push origin main
+```
+If your default branch is master:
+```bash
+git push origin master
+```
+---
+
+## 📌 Project Status
+
+This project is considered feature-complete.
+
+Optional future extensions:
+- Strategy backtesting
+- Additional technical indicators
+- Exportable reports (CSV / PDF)
+- Multi-user support
+- Cloud deployment
