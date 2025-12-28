@@ -1,16 +1,5 @@
-# Ignore virtual environments
 venv/
-.venv/
-
-# Ignore Python cache/compiled files
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Ignore VSCode workspace settings
-.vscode/
-
-# Ignore system files
-.DS_Store
-Thumbs.db
+.env
+*.csv
+.streamlit/secrets.toml
