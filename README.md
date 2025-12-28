@@ -1,8 +1,8 @@
 # Personal Investment Tracker & Stock Predictor (Streamlit)
 
-A full-featured personal finance and investment tracker built entirely in Python, with an interactive Streamlit web interface.
+A full-featured personal finance and investment tracker built entirely in Python, with an interactive Streamlit web interface and persistent SQL-backed storage.
 
-This project simulates a realistic retail investing platform: users can manage a virtual portfolio, trade stocks using live market data, track performance, and generate risk-aware, multi-day stock predictions using machine learning.
+This project simulates a realistic retail investing platform: users can manage a virtual portfolio, trade stocks using live market data, track performance over time, and generate risk-aware, multi-day stock predictions using machine learning.
 
 ---
 
@@ -10,14 +10,17 @@ This project simulates a realistic retail investing platform: users can manage a
 
 - Interactive Streamlit dashboard
 - Real-time stock prices via yfinance
+- Persistent portfolio storage using SQLite
+- Transaction-based accounting system
 - Portfolio tracking with:
-  - Total value
+  - Total portfolio value
   - Cash balance
   - Unrealized gains/losses
   - Net worth
 - Buy & sell stocks at live prices (simulation)
 - Virtual cash account (deposit / withdraw)
-- Portfolio allocation pie chart (stocks + cash)
+- Portfolio allocation visualization (stocks + cash)
+- Profit-over-time chart (excluding deposits/withdrawals)
 - Multi-day stock prediction engine with:
   - Ridge Regression (default)
   - Linear Regression
@@ -48,16 +51,36 @@ As a result:
 
 ---
 
+## 🗄️ Data Storage Design
+
+Portfolio state is **not stored directly**.
+
+Instead, the system uses a **transaction ledger model**, similar to real brokerages:
+
+- Every buy, sell, deposit, and withdrawal is recorded as a transaction
+- Current holdings and cash balance are computed from transaction history
+- Portfolio performance over time is reconstructed from historical prices
+
+### Benefits:
+- Full auditability of all actions
+- Accurate profit calculation excluding cash inflows/outflows
+- Clean separation between data persistence and analytics logic
+- New users start with a clean database on first run
+
+SQLite is used for simplicity and portability, with all database logic implemented in Python.
+
+---
+
 ## 🛠️ Tech Stack
 
 - Python 3
 - Streamlit — Web UI
+- SQLite — Persistent storage / Database layer
 - yfinance — Market data
 - pandas — Data manipulation
 - numpy — Numerical computation
 - scikit-learn — Machine learning
 - matplotlib — Data visualization
-- CSV — Lightweight persistence
 - VS Code — Development environment
 
 ---
@@ -82,6 +105,7 @@ pip install -r requirements.txt
 streamlit run dashboard.py
 ```
 The app will open automatically in your browser.
+On first run, a fresh local SQLite database will be created automatically.
 
 ## 📂 App Sections
 
@@ -101,29 +125,31 @@ The app will open automatically in your browser.
 
 ## 📊 Visualizations
 
-- Portfolio allocation pie chart
+- Portfolio allocation chart (stocks + cash)
 - Historical price chart
+- Profit-over-time chart (cash-neutral)
 - Decision-colored forecast line
 - Target price projection for selected horizon
-
 ---
 
 ## 🎯 Skills Demonstrated
 
 - End-to-end Python application development
+- SQL-backend data persistence and schema design
+- Transaction-based financial accounting
 - Financial data ingestion & processing
 - Feature engineering for time-series prediction
 - Machine learning model implementation
 - Risk-adjusted decision systems
-- UI/UX design for analytical tools
+- UI/UX design for analytical dashboards
 - Resume-grade project architecture
 
 ---
 
 ## ⚠️ Disclaimer
 
-This project is for educational purposes only.  
-It does not provide financial advice or investment recommendations.
+This project is for educational/analytical purposes only.  
+It does not provide professional financial advice or investment recommendations.
 
 ---
 
@@ -135,26 +161,11 @@ University of Waterloo
 
 ---
 
-## ⬆️ Pushing Updates to GitHub
-```bash
-git status
-git add .
-git commit -m "Finalize Streamlit investment tracker and prediction system"
-git push origin main
-```
-If your default branch is master:
-```bash
-git push origin master
-```
----
-
 ## 📌 Project Status
 
 This project is considered feature-complete.
 
 Optional future extensions:
-- Strategy backtesting
 - Additional technical indicators
-- Exportable reports (CSV / PDF)
 - Multi-user support
 - Cloud deployment
