@@ -141,7 +141,7 @@ def plot_profit_history(months: int = 6):
     ax.set_title("Profit over time (ignores deposits/withdrawals)")
     ax.set_xlabel("Date")
     ax.set_ylabel("Profit ($)")
-    ax.grid(True, alpha=0.25)
+    ax.grid(True, alpha=0.05)
 
     # Dark-mode friendly ticks
     ax.tick_params(colors="white")
