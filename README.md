@@ -89,18 +89,28 @@ SQLite is used for simplicity and portability, with all database logic implement
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+git clone https://github.com/AyazHaditalab/Personal-Investment-Tracker.git
+cd Personal-Investment-Tracker
 ```
-### 2️⃣ Install dependencies
+### 2️⃣ Create/activate a new virtual enviroment
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+### 3️⃣ Install/Upgrade pip
+```bash
+python -m pip install --upgrade pip
+```
+### 4️⃣ Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
+
 ---
 
 ## ▶️ Running the App
 
-### Streamlit GUI (recommended)
+### Streamlit GUI
 ```bash
 streamlit run dashboard.py
 ```
