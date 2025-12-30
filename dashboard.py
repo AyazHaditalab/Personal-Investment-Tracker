@@ -21,7 +21,7 @@ def display_portfolio():
         st.info("No positions yet. Buy a stock to start your portfolio.")
         st.write(f"**Cash Balance:** ${load_cash():.2f}")
         st.subheader("Cash history")
-        plot_profit_history(months=6)
+        plot_profit_history(months=1)
         return
 
     total_value = 0.0
@@ -64,7 +64,7 @@ def display_portfolio():
     st.write(f"**Net Worth:** ${(total_value + cash):.2f}")
 
     st.subheader("Cash history")
-    plot_profit_history(months=6)
+    plot_profit_history(months=1)
 
 # -----------------------------
 # Streamlit App
