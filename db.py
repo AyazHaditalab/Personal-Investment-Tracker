@@ -44,6 +44,23 @@ def init_db():
         )
         """)
 
+        # Net worth snapshots (for profit-over-time)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS net_worth_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ts TEXT NOT NULL DEFAULT (datetime('now')),
+            net_worth REAL NOT NULL,
+            cash REAL NOT NULL,
+            portfolio_value REAL NOT NULL,
+            source TEXT
+        )
+        """)
+
+        cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_net_worth_history_ts
+        ON net_worth_history(ts)
+        """)
+
         # Ensure account row exists
         cur.execute("SELECT cash FROM account WHERE id = 1")
         row = cur.fetchone()
