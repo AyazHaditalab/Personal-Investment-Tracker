@@ -1,15 +1,13 @@
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path("data") / "portfolio.db"
-
+DB_PATH = Path(__file__).resolve().parent / "data" / "portfolio.db"
 
 def get_conn():
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
-
 
 def _add_column_if_missing(cur: sqlite3.Cursor, table: str, col: str, col_def: str):
     """
@@ -20,7 +18,6 @@ def _add_column_if_missing(cur: sqlite3.Cursor, table: str, col: str, col_def: s
     existing = {row[1] for row in cur.fetchall()}  # row[1] = column name
     if col not in existing:
         cur.execute(f"ALTER TABLE {table} ADD COLUMN {col} {col_def}")
-
 
 def init_db():
     with get_conn() as conn:

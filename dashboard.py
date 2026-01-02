@@ -8,41 +8,36 @@ from visualizer import plot_profit_history
 
 from account import load_cash, log_cash_event
 from portfolio_store import load_portfolio, upsert_position, delete_position
-from net_worth_store import log_net_worth_snapshot
 
+# -----------------------------
+# Streamlit config
+# -----------------------------
+st.set_page_config(page_title="Personal Investment Tracker", layout="wide")
+st.sidebar.title("📊 Personal Investment Tracker")
+
+menu = ["📈 Portfolio", "💵 Trade Stocks", "🔮 Predict Stock", "💰 Manage Funds"]
+choice = st.sidebar.selectbox("Menu", menu)
+
+# Price caching (performance)
+@st.cache_data(ttl=15)
+def get_price_cached(ticker: str):
+    """Cache current price for 15s to avoid hammering yfinance on auto-refresh."""
+    return DataFetcher(ticker).get_current_price()
 
 def compute_portfolio_value_now() -> float:
     """
-    Current market value of held positions using DataFetcher current prices.
+    Current market value of held positions using cached current prices.
     If any ticker price fails, it is skipped (treated as 0 contribution).
     """
-    portfolio = load_portfolio()
     total_value = 0.0
-    for stock in portfolio:
+    for stock in load_portfolio():
         ticker = stock["ticker"]
         shares = float(stock["shares"])
-        price = DataFetcher(ticker).get_current_price()
+        price = get_price_cached(ticker)
         if price is None:
             continue
         total_value += float(price) * shares
     return float(total_value)
-
-
-def snapshot_now(source: str, throttle_seconds: int = 300):
-    """
-    Log a net worth snapshot using the same logic as the dashboard.
-    Throttled to avoid spamming DB.
-    """
-    cash = float(load_cash())
-    portfolio_value = float(compute_portfolio_value_now())
-    net_worth = cash + portfolio_value
-    log_net_worth_snapshot(
-        net_worth=net_worth,
-        cash=cash,
-        portfolio_value=portfolio_value,
-        source=source,
-        min_interval_seconds=throttle_seconds,
-    )
 
 
 # -----------------------------
@@ -51,15 +46,12 @@ def snapshot_now(source: str, throttle_seconds: int = 300):
 def display_portfolio():
     portfolio = load_portfolio()
 
-    # Snapshot even if empty (cash-only net worth). Throttle a bit.
-    snapshot_now(source="portfolio_view", throttle_seconds=300)
-
     if not portfolio:
         st.info("No positions yet. Buy a stock to start your portfolio.")
-        st.write(f"**Cash Balance:** ${load_cash():.2f}")
+        st.write(f"**Cash Balance:** ${float(load_cash()):.2f}")
 
         st.subheader("Profit over time")
-        plot_profit_history()
+        plot_profit_history()  # graph points come from cron snapshots (every 5 minutes)
         return
 
     total_value = 0.0
@@ -71,8 +63,7 @@ def display_portfolio():
         shares = float(stock["shares"])
         buy_price = float(stock["buy_price"])  # avg_cost stored as buy_price in this dict
 
-        fetcher = DataFetcher(ticker)
-        price = fetcher.get_current_price()
+        price = get_price_cached(ticker)
 
         if price is None:
             rows.append([ticker, shares, "N/A", "N/A", "N/A"])
@@ -101,27 +92,12 @@ def display_portfolio():
     st.write(f"**Cash Balance:** ${cash:.2f}")
     st.write(f"**Net Worth:** ${net_worth:.2f}")
 
-    # (Optional) snapshot again using these exact displayed numbers (still throttled)
-    log_net_worth_snapshot(
-        net_worth=float(net_worth),
-        cash=float(cash),
-        portfolio_value=float(total_value),
-        source="portfolio_view_displayed",
-        min_interval_seconds=300,
-    )
-
     st.subheader("Profit over time")
-    plot_profit_history()
+    plot_profit_history()  # cron-only points (every 5 minutes)
 
-
-# -----------------------------
-# Streamlit App
-# -----------------------------
-st.set_page_config(page_title="Personal Investment Tracker", layout="wide")
-st.sidebar.title("📊 Personal Investment Tracker")
-
-menu = ["📈 Portfolio", "💵 Trade Stocks", "🔮 Predict Stock", "💰 Manage Funds"]
-choice = st.sidebar.selectbox("Menu", menu)
+# =============================
+# Page routing
+# =============================
 
 # ===== Portfolio =====
 if choice == "📈 Portfolio":
@@ -129,7 +105,7 @@ if choice == "📈 Portfolio":
     display_portfolio()
 
 # ===== Predict Stock =====
-if choice == "🔮 Predict Stock":
+elif choice == "🔮 Predict Stock":
     st.header("🔮 Predict Stock")
 
     ticker = st.text_input("Ticker", placeholder="e.g., AAPL").strip().upper()
@@ -299,11 +275,13 @@ if choice == "🔮 Predict Stock":
                 return amount * r
             return amount * current_price * r
 
-        impact_df = pd.DataFrame({
-            "Scenario": ["Pessimistic", "Base", "Optimistic"],
-            "Return": [pessimistic * 100, base * 100, optimistic * 100],
-            "Impact": [dollar_impact(pessimistic), dollar_impact(base), dollar_impact(optimistic)],
-        })
+        impact_df = pd.DataFrame(
+            {
+                "Scenario": ["Pessimistic", "Base", "Optimistic"],
+                "Return": [pessimistic * 100, base * 100, optimistic * 100],
+                "Impact": [dollar_impact(pessimistic), dollar_impact(base), dollar_impact(optimistic)],
+            }
+        )
         impact_df["Return"] = impact_df["Return"].map(lambda x: f"{x:.2f}%")
         impact_df["Impact"] = impact_df["Impact"].map(lambda x: f"${x:.2f}")
 
@@ -320,13 +298,7 @@ if choice == "🔮 Predict Stock":
         with col_title:
             st.subheader("Charts")
         with col_ctrl:
-            months_to_show = st.selectbox(
-                "Range",
-                [6, 12, 24],
-                index=1,
-                key="chart_months",
-                label_visibility="collapsed"
-            )
+            months_to_show = st.selectbox("Range", [6, 12, 24], index=1, key="chart_months", label_visibility="collapsed")
 
         hist = raw[["Date", price_col]].dropna().copy()
         hist.rename(columns={price_col: "Price"}, inplace=True)
@@ -365,7 +337,7 @@ if choice == "🔮 Predict Stock":
         st.pyplot(fig)
 
 # ===== Trade Stocks =====
-if choice == "💵 Trade Stocks":
+elif choice == "💵 Trade Stocks":
     st.header("💵 Trade Stocks")
 
     trade_action = st.selectbox("Action", ["Buy", "Sell"])
@@ -373,8 +345,7 @@ if choice == "💵 Trade Stocks":
     shares = st.number_input("Shares", min_value=1.0, step=1.0)
 
     if st.button("Execute Trade", disabled=(ticker == "")):
-        fetcher = DataFetcher(ticker)
-        price = fetcher.get_current_price()
+        price = get_price_cached(ticker)
 
         if price is None:
             st.warning("Invalid ticker or failed to fetch price.")
@@ -402,7 +373,6 @@ if choice == "💵 Trade Stocks":
                     else:
                         upsert_position(ticker, shares, price)
 
-                    snapshot_now(source="trade_buy", throttle_seconds=0)
                     st.success(f"Bought {shares:g} shares of {ticker} at ${price:.2f}")
 
             else:  # Sell
@@ -422,14 +392,13 @@ if choice == "💵 Trade Stocks":
                         else:
                             upsert_position(ticker, remaining, float(stock["buy_price"]))
 
-                        snapshot_now(source="trade_sell", throttle_seconds=0)
                         st.success(f"Sold {shares:g} shares of {ticker} at ${price:.2f}")
                         break
                 else:
                     st.warning("You don't own this stock.")
 
 # ===== Manage Funds =====
-if choice == "💰 Manage Funds":
+elif choice == "💰 Manage Funds":
     st.header("💰 Manage Cash Balance")
 
     current_cash = float(load_cash())
@@ -441,7 +410,6 @@ if choice == "💰 Manage Funds":
     if st.button("Submit") and amount > 0:
         if action == "Deposit":
             log_cash_event("deposit", +amount)
-            snapshot_now(source="deposit", throttle_seconds=0)
             st.success(f"Deposited ${amount:.2f}. New balance: ${load_cash():.2f}")
 
         else:  # Withdraw
@@ -449,5 +417,5 @@ if choice == "💰 Manage Funds":
                 st.warning("Insufficient funds to withdraw.")
             else:
                 log_cash_event("withdraw", -amount)
-                snapshot_now(source="withdraw", throttle_seconds=0)
                 st.success(f"Withdrew ${amount:.2f}. New balance: ${load_cash():.2f}")
+
