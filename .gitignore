@@ -1,8 +1,29 @@
-venv/
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+
+# Environment variables / secrets
 .env
 .streamlit/secrets.toml
-data/*.db
-.venv/
-*.pyc
+
+# Database / persistent data
+data/
+*.db
+
+# Logs (cron, background jobs)
+logs/
+*.log
+
+# Streamlit runtime files
+.streamlit/
+
+# OS / editor noise
 .DS_Store
+Thumbs.db
+.vscode/
