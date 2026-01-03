@@ -20,7 +20,7 @@ This project simulates a realistic retail investing platform: users can manage a
 - Buy & sell stocks at live prices (simulation)
 - Virtual cash account (deposit / withdraw)
 - Portfolio allocation visualization (stocks + cash)
-- Profit-over-time chart (excluding deposits/withdrawals)
+- Profit-over-time chart (cash-neutral, snapshot-based)
 - Multi-day stock prediction engine with:
   - Ridge Regression (default)
   - Linear Regression
@@ -71,6 +71,25 @@ SQLite is used for simplicity and portability, with all database logic implement
 
 ---
 
+## ⏱️ Profit History & Background Snapshots
+
+In production, portfolio profit history is updated using **periodic background snapshots**.
+
+- A background scheduler (e.g. `cron`) records net worth snapshots at fixed intervals (every 5 minutes)
+- The profit-over-time graph is generated entirely from these stored snapshots
+- The Streamlit app **only reads data** and does not generate time-series points itself
+
+### Local vs Production Behavior
+
+- **Production (with scheduler):**  
+  Profit history updates continuously, even when the app is not open.
+
+- **Local / GitHub clones (no scheduler):**  
+  Profit history only updates when snapshots are created (e.g. trades, deposits).  
+  This is intentional and keeps application logic clean and realistic.
+
+This design mirrors real-world systems where background workers handle data collection.
+
 ## 🛠️ Tech Stack
 
 - Python 3
@@ -112,10 +131,13 @@ pip install -r requirements.txt
 
 ### Streamlit GUI
 ```bash
-streamlit run dashboard.py
+./run.sh
 ```
 The app will open automatically in your browser.
 On first run, a fresh local SQLite database will be created automatically.
+> ⚠️ **Note:**  
+> Profit history updates automatically only when a background snapshot job is running.  
+> Local runs without a scheduler will show limited or step-based profit history.
 
 ## 📂 App Sections
 
@@ -174,8 +196,8 @@ University of Waterloo
 ## 📌 Project Status
 
 This project is considered feature-complete.
+- Background snapshot system implemented (cron-based)
 
 Optional future extensions:
 - Additional technical indicators
 - Multi-user support
-- Cloud deployment

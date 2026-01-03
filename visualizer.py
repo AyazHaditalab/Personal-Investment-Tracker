@@ -136,9 +136,4 @@ def plot_profit_history(timeframe: str = "1D"):
 
     # Optional: show latest point stats
     last = snaps.iloc[-1]
-    st.caption(
-        f"Latest profit: ${float(last['profit']):.2f} • "
-        f"Net worth: ${float(last['net_worth']):.2f} • "
-        f"Net contributions: ${float(last['net_contrib']):.2f} • "
-        f"Points shown: {len(snaps)} (cron = every 5 min)"
-    )
+    st.caption("Profit history updates via background snapshots in production.")
