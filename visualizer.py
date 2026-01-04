@@ -188,4 +188,8 @@ def plot_profit_history(timeframe: str = "1H"):
     st.pyplot(fig, transparent=True)
 
     last = snaps.iloc[-1]
-    st.caption("Profit history updates via background snapshots (cron).")
+    st.caption(
+    "Profit history is generated from net worth snapshots. "
+    "With a background scheduler (e.g. cron), snapshots update automatically; "
+    "otherwise they update on page refresh."
+    )
