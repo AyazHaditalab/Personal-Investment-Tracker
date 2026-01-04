@@ -129,10 +129,15 @@ pip install -r requirements.txt
 
 ## ▶️ Running the App
 
-### Streamlit GUI
+### Linux / Bash / macOS
 ```bash
 ./run.sh
 ```
+### Windows (PowerShell / CMD)
+```bash
+streamlit run dashboard.py --server.fileWatcherType none
+```
+
 The app will open automatically in your browser.
 On first run, a fresh local SQLite database will be created automatically.
 > ⚠️ **Note:**  
