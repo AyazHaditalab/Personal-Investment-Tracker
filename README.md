@@ -1,7 +1,7 @@
 # Personal Investment Tracker & Stock Predictor (Streamlit)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-brightgreen)](https://ayaz-investment-tracker.streamlit.app/)
 
-A full-featured personal finance and investment tracker built entirely in Python, with an interactive Streamlit web interface and persistent SQL-backed storage.
+A full-featured personal finance and investment tracker built in Python, with an interactive Streamlit web interface and persistent SQL-backed storage.
 
 This project simulates a realistic retail investing platform: users can manage a virtual portfolio, trade stocks using live market data, track performance over time, and generate risk-aware, multi-day stock predictions using machine learning.
 
