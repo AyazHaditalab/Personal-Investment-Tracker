@@ -9,6 +9,10 @@ from visualizer import plot_profit_history
 from account import load_cash, log_cash_event
 from portfolio_store import load_portfolio, upsert_position, delete_position
 
+from datetime import datetime, timezone, timedelta
+from db import get_conn, init_db
+from net_worth_store import log_net_worth_snapshot
+
 # -----------------------------
 # Streamlit config
 # -----------------------------
@@ -17,6 +21,8 @@ st.sidebar.title("📊 Personal Investment Tracker")
 
 menu = ["📈 Portfolio", "💵 Trade Stocks", "🔮 Predict Stock", "💰 Manage Funds"]
 choice = st.sidebar.selectbox("Menu", menu)
+
+init_db()
 
 # Price caching (performance)
 @st.cache_data(ttl=15)
@@ -39,6 +45,39 @@ def compute_portfolio_value_now() -> float:
         total_value += float(price) * shares
     return float(total_value)
 
+def snapshot_now(source: str, throttle_seconds: int = 60):
+    """
+    Demo fallback: write a net worth snapshot from the Streamlit app.
+    (Cron users won't hit this if cron is detected.)
+    """
+    cash = float(load_cash())
+    portfolio_value = float(compute_portfolio_value_now())
+    net_worth = cash + portfolio_value
+    log_net_worth_snapshot(
+        net_worth=net_worth,
+        cash=cash,
+        portfolio_value=portfolio_value,
+        source=source,
+        min_interval_seconds=throttle_seconds,
+    )
+
+def cron_is_active(source: str = "cron_5m", within_minutes: int = 15) -> bool:
+    with get_conn() as conn:
+        row = conn.execute(
+            """
+            SELECT (julianday('now') - julianday(ts)) * 86400.0 AS diff_seconds
+            FROM net_worth_history
+            WHERE source = ?
+            ORDER BY ts DESC
+            LIMIT 1
+            """,
+            (source,),
+        ).fetchone()
+
+    if row is None or row["diff_seconds"] is None:
+        return False
+
+    return float(row["diff_seconds"]) <= within_minutes * 60.0
 
 # -----------------------------
 # Portfolio Page
@@ -51,7 +90,12 @@ def display_portfolio():
         st.write(f"**Cash Balance:** ${float(load_cash()):.2f}")
 
         st.subheader("Profit over time")
-        plot_profit_history()  # graph points come from cron snapshots (every 5 minutes)
+
+        # Demo fallback: if cron isn't running, create snapshots on page load (throttled).
+        if not cron_is_active():
+            snapshot_now(source="demo_refresh", throttle_seconds=60)
+
+        plot_profit_history()  # cron points every 5 minutes; demo points on reload
         return
 
     total_value = 0.0
@@ -93,7 +137,12 @@ def display_portfolio():
     st.write(f"**Net Worth:** ${net_worth:.2f}")
 
     st.subheader("Profit over time")
-    plot_profit_history()  # cron-only points (every 5 minutes)
+
+    # Demo fallback: if cron isn't running, create snapshots on page load (throttled).
+    if not cron_is_active():
+        snapshot_now(source="demo_refresh", throttle_seconds=60)
+
+    plot_profit_history()  # cron points every 5 minutes; demo points on reload
 
 # =============================
 # Page routing
