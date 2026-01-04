@@ -20,7 +20,7 @@ This project simulates a realistic retail investing platform: users can manage a
 - Buy & sell stocks at live prices (simulation)
 - Virtual cash account (deposit / withdraw)
 - Portfolio allocation visualization (stocks + cash)
-- Profit-over-time chart (cash-neutral, snapshot-based)
+- Profit-over-time chart (cash-neutral, snapshot-based, auto-detects background scheduler)
 - Multi-day stock prediction engine with:
   - Ridge Regression (default)
   - Linear Regression
@@ -84,9 +84,9 @@ In production, portfolio profit history is updated using **periodic background s
 - **Production (with scheduler):**  
   Profit history updates continuously, even when the app is not open.
 
-- **Local / GitHub clones (no scheduler):**  
-  Profit history only updates when snapshots are created (e.g. trades, deposits).  
-  This is intentional and keeps application logic clean and realistic.
+- **Local / GitHub clones (no scheduler detected):**  
+  The app automatically falls back to creating throttled snapshots on page load,  
+  ensuring the profit-over-time graph updates and remains visible during demos.
 
 This design mirrors real-world systems where background workers handle data collection.
 
@@ -136,8 +136,9 @@ pip install -r requirements.txt
 The app will open automatically in your browser.
 On first run, a fresh local SQLite database will be created automatically.
 > ⚠️ **Note:**  
-> Profit history updates automatically only when a background snapshot job is running.  
-> Local runs without a scheduler will show limited or step-based profit history.
+> The app automatically detects whether a background snapshot scheduler is running.  
+> If none is found (e.g. local runs), it falls back to throttled, on-load snapshots so  
+> the profit history remains visible and interactive.
 
 ## 📂 App Sections
 
@@ -196,7 +197,7 @@ University of Waterloo
 ## 📌 Project Status
 
 This project is considered feature-complete.
-- Background snapshot system implemented (cron-based)
+- Background snapshot system implemented (cron-based, with automatic demo fallback)
 
 Optional future extensions:
 - Additional technical indicators
