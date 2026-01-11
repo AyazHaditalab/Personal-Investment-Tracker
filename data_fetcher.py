@@ -6,10 +6,12 @@ class DataFetcher:
         self.stock = yf.Ticker(self.ticker)
 
     def get_current_price(self):
-        data = self.stock.history(period="1d")
-        if not data.empty:
-            return data['Close'].iloc[-1]
-        else:
+        try:
+            data = self.stock.history(period="1d")
+            if data is None or data.empty:
+                return None
+            return float(data["Close"].iloc[-1])
+        except Exception:
             return None
 
     def get_company_info(self):
